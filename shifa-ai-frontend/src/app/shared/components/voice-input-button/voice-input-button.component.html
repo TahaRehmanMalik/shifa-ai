@@ -1,0 +1,13 @@
+<button
+  mat-icon-button
+  type="button"
+  [disabled]="!isSupported()"
+  [class.listening]="isListening()"
+  [matTooltip]="
+    isSupported() ? (isListening() ? 'Stop listening' : 'Start voice input') : 'Voice input is not supported in this browser'
+  "
+  [attr.aria-label]="isListening() ? 'Stop voice input' : 'Start voice input'"
+  (click)="toggleListening()"
+>
+  <mat-icon>{{ isListening() ? 'mic' : 'mic_none' }}</mat-icon>
+</button>

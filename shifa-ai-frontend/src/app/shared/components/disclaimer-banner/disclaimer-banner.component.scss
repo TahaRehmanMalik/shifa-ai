@@ -1,0 +1,19 @@
+.disclaimer-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background-color: #fff8e1;
+  border-left: 4px solid #f9a825;
+  color: #6d4c00;
+
+  mat-icon {
+    color: #f9a825;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+  }
+}

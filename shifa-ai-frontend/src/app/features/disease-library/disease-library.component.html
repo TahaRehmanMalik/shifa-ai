@@ -1,0 +1,21 @@
+<mat-toolbar color="primary">
+  <app-back-button></app-back-button>
+  <span class="app-title">Disease Library</span>
+  <span class="spacer"></span>
+  <app-language-switcher></app-language-switcher>
+</mat-toolbar>
+
+<main class="disease-library-main">
+  @if (isLoading()) {
+    <app-loading-indicator message="Loading diseases..."></app-loading-indicator>
+  } @else {
+    <mat-nav-list>
+      @for (disease of diseases(); track disease.id) {
+        <a mat-list-item (click)="onDiseaseSelected(disease)">
+          <mat-icon matListItemIcon aria-hidden="true">coronavirus</mat-icon>
+          <span matListItemTitle>{{ displayName(disease) }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  }
+</main>

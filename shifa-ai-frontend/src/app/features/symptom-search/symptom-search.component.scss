@@ -1,0 +1,28 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.symptom-search-main {
+  padding: 24px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.input-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.symptom-field {
+  flex: 1 1 auto;
+}
+
+button[type='submit'] {
+  min-height: 44px;
+}
+
+.submission-error {
+  color: #b71c1c;
+  margin-top: 12px;
+}

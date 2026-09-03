@@ -1,0 +1,23 @@
+:host {
+  display: inline-block;
+}
+
+button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.listening {
+  color: #d32f2f;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

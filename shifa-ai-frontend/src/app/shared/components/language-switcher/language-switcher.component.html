@@ -1,0 +1,9 @@
+<mat-button-toggle-group
+  [value]="currentLanguage()"
+  (change)="onLanguageChange($event.value)"
+  aria-label="Select language"
+>
+  <mat-button-toggle value="ur">اردو</mat-button-toggle>
+  <mat-button-toggle value="en">English</mat-button-toggle>
+  <mat-button-toggle value="pa">پنجابی</mat-button-toggle>
+</mat-button-toggle-group>

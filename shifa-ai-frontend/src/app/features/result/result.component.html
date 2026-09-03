@@ -1,0 +1,187 @@
+<mat-toolbar color="primary">
+  <app-back-button></app-back-button>
+  <span class="app-title">Result</span>
+  <span class="spacer"></span>
+  <app-language-switcher></app-language-switcher>
+</mat-toolbar>
+
+@if (result(); as currentResult) {
+  <main class="result-main">
+    @switch (currentResult.response_type) {
+      @case ('medicine_info') {
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Medicine Information</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="source-caption">
+              @if (currentResult.source === 'database') {
+                Source: database
+              } @else {
+                Source: AI ({{ currentResult.provider ?? 'unknown provider' }})
+              }
+            </p>
+            <p>
+              {{
+                languageService.currentLanguage() === 'en'
+                  ? currentResult.medicine_summary_en
+                  : currentResult.medicine_summary_ur
+              }}
+            </p>
+          </mat-card-content>
+        </mat-card>
+
+        <app-disclaimer-banner
+          [disclaimerEn]="currentResult.disclaimer_en ?? ''"
+          [disclaimerUr]="currentResult.disclaimer_ur ?? ''"
+        ></app-disclaimer-banner>
+      }
+      @case ('off_topic') {
+        <mat-card class="message-card">
+          <mat-card-content>
+            <mat-icon class="message-icon">info</mat-icon>
+            <p>{{ languageService.currentLanguage() === 'en' ? currentResult.message_en : currentResult.message_ur }}</p>
+          </mat-card-content>
+        </mat-card>
+      }
+      @case ('unsafe_request') {
+        <mat-card class="message-card">
+          <mat-card-content>
+            <mat-icon class="message-icon message-icon-warn">report_problem</mat-icon>
+            <p>{{ languageService.currentLanguage() === 'en' ? currentResult.message_en : currentResult.message_ur }}</p>
+          </mat-card-content>
+        </mat-card>
+      }
+      @default {
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>
+              {{ languageService.currentLanguage() === 'en' ? currentResult.condition_en : currentResult.condition_ur }}
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="source-caption">
+              @if (currentResult.source === 'database') {
+                Source: database
+              } @else {
+                Source: AI ({{ currentResult.provider ?? 'unknown provider' }})
+              }
+            </p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="section-card">
+          <mat-card-header>
+            <mat-card-title>Root Cause</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>
+              {{
+                languageService.currentLanguage() === 'en' ? currentResult.root_cause_en : currentResult.root_cause_ur
+              }}
+            </p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="diet-plan-card">
+          <mat-card-header>
+            <mat-card-title>Diet Plan</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>
+              {{ languageService.currentLanguage() === 'en' ? currentResult.diet_plan_en : currentResult.diet_plan_ur }}
+            </p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="medicine-class-card">
+          <mat-card-header>
+            <mat-card-title>Medicine Class</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>
+              {{
+                languageService.currentLanguage() === 'en'
+                  ? currentResult.medicine_class_en
+                  : currentResult.medicine_class_ur
+              }}
+            </p>
+          </mat-card-content>
+        </mat-card>
+
+        @if ((currentResult.citations?.length ?? 0) > 0 && currentResult.groundedInSearch) {
+          <mat-card class="section-card">
+            <mat-card-header>
+              <mat-card-title>Sources</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <ul class="citation-list">
+                @for (citation of currentResult.citations; track citation) {
+                  <li>
+                    <a [href]="citation" target="_blank" rel="noopener noreferrer">{{ citation }}</a>
+                  </li>
+                }
+              </ul>
+            </mat-card-content>
+          </mat-card>
+        }
+
+        <app-disclaimer-banner
+          [disclaimerEn]="currentResult.disclaimer_en ?? ''"
+          [disclaimerUr]="currentResult.disclaimer_ur ?? ''"
+        ></app-disclaimer-banner>
+      }
+    }
+
+    @if (followUpMessages().length > 0) {
+      <div class="follow-up-thread">
+        @for (message of followUpMessages(); track $index) {
+          @if (message.role === 'user') {
+            <div class="chat-row chat-row-user">
+              <div class="chat-bubble chat-bubble-user">{{ message.text }}</div>
+            </div>
+          } @else {
+            <div class="chat-row chat-row-assistant">
+              <mat-card class="chat-bubble chat-bubble-assistant">
+                <mat-card-content>{{ message.text }}</mat-card-content>
+              </mat-card>
+            </div>
+          }
+        }
+      </div>
+    }
+
+    <form class="follow-up-form" [formGroup]="followUpForm" (ngSubmit)="sendFollowUp()">
+      <mat-form-field appearance="outline" class="follow-up-field">
+        <mat-label>Ask a follow-up question</mat-label>
+        <input matInput formControlName="followUpText" [disabled]="isSendingFollowUp()" />
+      </mat-form-field>
+      <app-voice-input-button (transcriptRecognized)="onTranscriptRecognized($event)"></app-voice-input-button>
+      <button
+        mat-icon-button
+        color="primary"
+        type="submit"
+        class="follow-up-send"
+        aria-label="Send follow-up question"
+        [disabled]="followUpControl.invalid || isSendingFollowUp()"
+      >
+        @if (isSendingFollowUp()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          <mat-icon>send</mat-icon>
+        }
+      </button>
+    </form>
+  </main>
+
+  <button
+    mat-fab
+    extended
+    color="accent"
+    class="new-search-fab"
+    aria-label="Start a new search"
+    (click)="startNewSearch()"
+  >
+    New Search
+  </button>
+}

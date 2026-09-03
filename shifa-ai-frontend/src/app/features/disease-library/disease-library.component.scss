@@ -1,0 +1,14 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.disease-library-main {
+  padding: 24px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+a[mat-list-item] {
+  cursor: pointer;
+  min-height: 44px;
+}

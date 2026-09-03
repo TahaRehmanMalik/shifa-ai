@@ -1,0 +1,30 @@
+<mat-toolbar color="primary">
+  <span class="app-title">{{ titleByLanguage[languageService.currentLanguage()] }}</span>
+  <span class="spacer"></span>
+  <app-language-switcher></app-language-switcher>
+</mat-toolbar>
+
+<main class="home-main">
+  <h1>{{ titleByLanguage[languageService.currentLanguage()] }}</h1>
+  <p class="subtitle">{{ subtitleByLanguage[languageService.currentLanguage()] }}</p>
+
+  <div class="action-grid">
+    <a routerLink="/symptom-search" class="action-link" aria-label="Search by Symptom">
+      <mat-card class="action-card">
+        <mat-card-content>
+          <mat-icon class="action-icon" aria-hidden="true">search</mat-icon>
+          <h2>Search by Symptom</h2>
+        </mat-card-content>
+      </mat-card>
+    </a>
+
+    <a routerLink="/disease-library" class="action-link" aria-label="Browse Diseases">
+      <mat-card class="action-card">
+        <mat-card-content>
+          <mat-icon class="action-icon" aria-hidden="true">menu_book</mat-icon>
+          <h2>Browse Diseases</h2>
+        </mat-card-content>
+      </mat-card>
+    </a>
+  </div>
+</main>
