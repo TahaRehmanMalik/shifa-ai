@@ -11,6 +11,7 @@ import { BackButtonComponent } from '../../shared/components/back-button/back-bu
 import { LanguageSwitcherComponent } from '../../shared/components/language-switcher/language-switcher.component';
 import { LoadingIndicatorComponent } from '../../shared/components/loading-indicator/loading-indicator.component';
 import { VoiceInputButtonComponent } from '../../shared/components/voice-input-button/voice-input-button.component';
+import { UserMenuComponent } from '../../shared/components/user-menu/user-menu.component';
 import { NormalizedHttpError } from '../../core/interceptors/error.interceptor';
 import { LanguageService } from '../../core/services/language.service';
 import { ResultService } from '../../core/services/result.service';
@@ -30,6 +31,7 @@ import { SymptomApiService } from '../../core/services/symptom-api.service';
     LanguageSwitcherComponent,
     LoadingIndicatorComponent,
     VoiceInputButtonComponent,
+    UserMenuComponent,
   ],
   templateUrl: './symptom-search.component.html',
   styleUrl: './symptom-search.component.scss',

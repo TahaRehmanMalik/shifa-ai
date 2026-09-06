@@ -1,0 +1,91 @@
+<div [dir]="languageService.direction()" class="login-shell">
+  <div class="login-language-switcher">
+    <app-language-switcher></app-language-switcher>
+  </div>
+
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>{{ copy[languageService.currentLanguage()].title }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div #googleButton class="google-button-container"></div>
+
+      @if (googleError()) {
+        <p class="google-error" role="alert">{{ googleError() }}</p>
+      }
+
+      <div class="divider-row">
+        <span class="divider-line"></span>
+        <span class="divider-text">{{ copy[languageService.currentLanguage()].orDivider }}</span>
+        <span class="divider-line"></span>
+      </div>
+
+      <form [formGroup]="emailForm" (ngSubmit)="requestOtp()">
+        <mat-form-field appearance="outline" class="full-width-field">
+          <mat-label>{{ copy[languageService.currentLanguage()].emailLabel }}</mat-label>
+          <input matInput type="email" formControlName="email" [readonly]="otpRequested()" />
+          @if (emailControl.hasError('required')) {
+            <mat-error>{{ copy[languageService.currentLanguage()].emailRequiredError }}</mat-error>
+          } @else if (emailControl.hasError('email')) {
+            <mat-error>{{ copy[languageService.currentLanguage()].emailInvalidError }}</mat-error>
+          } @else if (emailControl.hasError('server')) {
+            <mat-error>{{ emailControl.getError('server') }}</mat-error>
+          }
+        </mat-form-field>
+
+        @if (!otpRequested()) {
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            class="full-width-button"
+            [disabled]="isRequestingOtp()"
+          >
+            @if (isRequestingOtp()) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              {{ copy[languageService.currentLanguage()].sendCode }}
+            }
+          </button>
+        }
+      </form>
+
+      @if (otpRequested()) {
+        <p class="otp-sent-notice">{{ copy[languageService.currentLanguage()].otpSentNotice }}</p>
+
+        <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()">
+          <mat-form-field appearance="outline" class="full-width-field">
+            <mat-label>{{ copy[languageService.currentLanguage()].otpLabel }}</mat-label>
+            <input matInput inputmode="numeric" maxlength="6" formControlName="otp" />
+            @if (otpControl.hasError('required')) {
+              <mat-error>{{ copy[languageService.currentLanguage()].otpRequiredError }}</mat-error>
+            } @else if (otpControl.hasError('pattern')) {
+              <mat-error>{{ copy[languageService.currentLanguage()].otpInvalidError }}</mat-error>
+            } @else if (otpControl.hasError('server')) {
+              <mat-error>{{ otpControl.getError('server') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            class="full-width-button"
+            [disabled]="isVerifyingOtp()"
+          >
+            @if (isVerifyingOtp()) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              {{ copy[languageService.currentLanguage()].verify }}
+            }
+          </button>
+
+          <button mat-button type="button" class="full-width-button" (click)="changeEmail()">
+            {{ copy[languageService.currentLanguage()].changeEmail }}
+          </button>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

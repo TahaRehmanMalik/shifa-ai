@@ -7,11 +7,7 @@ const { ProviderTimeoutError } = require('./providers/providerTimeout');
 const PRIMARY_PROVIDER = 'groq';
 const PROVIDER_TIMEOUT_MS = 12000;
 
-// Ordered fastest/most-reliable first, based on observed latency and error
-// rates. groq-plain (openai/gpt-oss-120b, no forced tool use) is proven
-// fastest and most reliable in testing. groq-compound (compound-mini with
-// web_search forced on) is the slowest and most error-prone, so it's tried
-// last, only reached once every faster option has failed.
+
 const PROVIDER_CHAIN = [
   {
     name: 'groq-plain',

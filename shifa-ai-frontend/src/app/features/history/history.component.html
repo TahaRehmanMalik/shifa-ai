@@ -1,0 +1,25 @@
+<mat-toolbar color="primary">
+  <app-back-button></app-back-button>
+  <span class="app-title">History</span>
+  <span class="spacer"></span>
+  <app-language-switcher></app-language-switcher>
+  <app-user-menu></app-user-menu>
+</mat-toolbar>
+
+<main class="history-main">
+  @if (isLoading()) {
+    <app-loading-indicator message="Loading your conversations..."></app-loading-indicator>
+  } @else if (conversations().length === 0) {
+    <p class="empty-state">You have no past conversations yet.</p>
+  } @else {
+    <mat-nav-list>
+      @for (conversation of conversations(); track conversation.id) {
+        <a mat-list-item (click)="openConversation(conversation)">
+          <mat-icon matListItemIcon aria-hidden="true">chat</mat-icon>
+          <span matListItemTitle>{{ conversation.preview ?? 'Conversation' }}</span>
+          <span matListItemLine>{{ conversation.created_at | date: 'medium' }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  }
+</main>

@@ -14,17 +14,13 @@ import { BackButtonComponent } from '../../shared/components/back-button/back-bu
 import { DisclaimerBannerComponent } from '../../shared/components/disclaimer-banner/disclaimer-banner.component';
 import { LanguageSwitcherComponent } from '../../shared/components/language-switcher/language-switcher.component';
 import { VoiceInputButtonComponent } from '../../shared/components/voice-input-button/voice-input-button.component';
+import { UserMenuComponent } from '../../shared/components/user-menu/user-menu.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { NormalizedHttpError } from '../../core/interceptors/error.interceptor';
-import { HealthResponse } from '../../core/models/health-response.model';
 import { LanguageService } from '../../core/services/language.service';
 import { ResultService } from '../../core/services/result.service';
 import { SymptomApiService } from '../../core/services/symptom-api.service';
-
-interface FollowUpMessage {
-  role: 'user' | 'assistant';
-  text: string;
-}
+import { extractResponseSummary } from '../../core/utils/response-summary';
 
 @Component({
   selector: 'app-result',
@@ -42,6 +38,7 @@ interface FollowUpMessage {
     DisclaimerBannerComponent,
     LanguageSwitcherComponent,
     VoiceInputButtonComponent,
+    UserMenuComponent,
   ],
   templateUrl: './result.component.html',
   styleUrl: './result.component.scss',
@@ -65,7 +62,7 @@ export class ResultComponent {
     followUpText: this.followUpControl,
   });
 
-  protected readonly followUpMessages = signal<FollowUpMessage[]>([]);
+  protected readonly followUpMessages = this.resultService.followUpMessages;
   protected readonly isSendingFollowUp = signal(false);
 
   constructor() {
@@ -87,7 +84,7 @@ export class ResultComponent {
       return;
     }
 
-    this.followUpMessages.update((messages) => [...messages, { role: 'user', text: symptomText }]);
+    this.resultService.addFollowUpMessage({ role: 'user', text: symptomText });
     this.followUpControl.reset('');
     this.isSendingFollowUp.set(true);
 
@@ -104,35 +101,17 @@ export class ResultComponent {
           if (result.conversationId) {
             this.resultService.setConversationId(result.conversationId);
           }
-          const answer = this.extractFollowUpAnswer(result);
-          this.followUpMessages.update((messages) => [...messages, { role: 'assistant', text: answer }]);
+          const answer = extractResponseSummary(result, this.languageService.currentLanguage());
+          this.resultService.addFollowUpMessage({ role: 'assistant', text: answer });
         },
         error: (error: NormalizedHttpError) => {
-          this.followUpMessages.update((messages) => [
-            ...messages,
-            { role: 'assistant', text: error.message },
-          ]);
+          this.resultService.addFollowUpMessage({ role: 'assistant', text: error.message });
         },
       });
   }
 
   protected onTranscriptRecognized(transcript: string): void {
     this.followUpControl.setValue(transcript);
-  }
-
-  private extractFollowUpAnswer(result: HealthResponse): string {
-    const isEnglish = this.languageService.currentLanguage() === 'en';
-
-    switch (result.response_type) {
-      case 'medicine_info':
-        return (isEnglish ? result.medicine_summary_en : result.medicine_summary_ur) ?? '';
-      case 'off_topic':
-      case 'unsafe_request':
-        return (isEnglish ? result.message_en : result.message_ur) ?? '';
-      case 'health_query':
-      default:
-        return (isEnglish ? result.root_cause_en : result.root_cause_ur) ?? '';
-    }
   }
 
   protected startNewSearch(): void {

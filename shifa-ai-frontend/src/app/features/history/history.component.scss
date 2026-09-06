@@ -1,0 +1,20 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.history-main {
+  padding: 24px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.empty-state {
+  color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+  margin-top: 32px;
+}
+
+a[mat-list-item] {
+  cursor: pointer;
+  min-height: 56px;
+}

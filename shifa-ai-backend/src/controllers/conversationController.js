@@ -4,8 +4,8 @@ async function getMessages(req, res) {
   const { id } = req.params;
 
   try {
-    const exists = await conversationService.conversationExists(id);
-    if (!exists) {
+    const owns = await conversationService.conversationBelongsToUser(id, req.userId);
+    if (!owns) {
       return res.status(404).json({ error: 'Conversation not found' });
     }
 
@@ -17,4 +17,20 @@ async function getMessages(req, res) {
   }
 }
 
-module.exports = { getMessages };
+async function listConversations(req, res) {
+  try {
+    const conversations = await conversationService.listUserConversations(req.userId);
+    return res.json({
+      conversations: conversations.map((conversation) => ({
+        id: conversation.id,
+        created_at: conversation.created_at,
+        preview: conversation.preview,
+      })),
+    });
+  } catch (error) {
+    console.error('[conversationController] listConversations failed:', error);
+    return res.status(500).json({ error: 'Failed to fetch conversations' });
+  }
+}
+
+module.exports = { getMessages, listConversations };

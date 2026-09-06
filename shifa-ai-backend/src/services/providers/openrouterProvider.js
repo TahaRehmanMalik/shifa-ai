@@ -3,11 +3,7 @@ const { ProviderTimeoutError, createTimeoutSignal } = require('./providerTimeout
 
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
-// Hard cap, independent of whatever timeoutMs aiService passes down — a live
-// test observed OpenRouter's free-tier model hang for 190s+ (headers arrive
-// fine, but the response body can stall indefinitely). The AbortController
-// signal must stay live through the response.json()/text() read too, not
-// just the initial fetch() call, or a slow body bypasses the timeout entirely.
+
 const OPENROUTER_TIMEOUT_MS = 8000;
 
 function stripCodeFences(text) {
@@ -67,8 +63,6 @@ async function generateHealthResponse(symptomText, language, { history = [] } = 
   const content = data.choices?.[0]?.message?.content || '';
   const parsed = JSON.parse(stripCodeFences(content));
 
-  // This model has no built-in web search, so any citations it produces would be
-  // unverified/hallucinated — never surface them as if they came from a real search.
   const citations = [];
 
   return {

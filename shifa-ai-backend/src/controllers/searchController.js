@@ -1,4 +1,3 @@
-const crypto = require('crypto');
 const diseaseService = require('../services/diseaseService');
 const aiService = require('../services/aiService');
 const logService = require('../services/logService');
@@ -113,7 +112,7 @@ function shapeAiResult(parsed) {
 async function search(req, res) {
   const startedAt = Date.now();
   const requestStartIso = new Date(startedAt).toISOString();
-  const { symptomText, language, inputMode, conversationId, sessionId } = req.body;
+  const { symptomText, language, inputMode, conversationId } = req.body;
 
   if (!symptomText || typeof symptomText !== 'string' || !symptomText.trim()) {
     return res.status(400).json({ error: 'symptomText is required' });
@@ -127,12 +126,12 @@ async function search(req, res) {
     let resolvedConversationId = conversationId;
 
     if (resolvedConversationId) {
-      const exists = await conversationService.conversationExists(resolvedConversationId);
-      if (!exists) {
+      const owns = await conversationService.conversationBelongsToUser(resolvedConversationId, req.userId);
+      if (!owns) {
         return res.status(404).json({ error: 'conversationId not found' });
       }
     } else {
-      resolvedConversationId = await conversationService.createConversation(sessionId || crypto.randomUUID());
+      resolvedConversationId = await conversationService.createConversation(req.userId);
     }
 
     if (containsUnsafeContent(symptomText)) {

@@ -123,7 +123,6 @@ async function generatePlainHealthResponse(
   const choice = completion.choices[0];
   const parsed = JSON.parse(choice.message.content);
 
-  // This path never invokes web search, so citations can't be trusted as real sources.
   const citations = [];
 
   return {

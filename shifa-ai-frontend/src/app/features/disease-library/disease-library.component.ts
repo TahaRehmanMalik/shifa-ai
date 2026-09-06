@@ -7,6 +7,7 @@ import { finalize } from 'rxjs';
 import { BackButtonComponent } from '../../shared/components/back-button/back-button.component';
 import { LanguageSwitcherComponent } from '../../shared/components/language-switcher/language-switcher.component';
 import { LoadingIndicatorComponent } from '../../shared/components/loading-indicator/loading-indicator.component';
+import { UserMenuComponent } from '../../shared/components/user-menu/user-menu.component';
 import { DiseaseSummary } from '../../core/models/health-response.model';
 import { LanguageService } from '../../core/services/language.service';
 import { ResultService } from '../../core/services/result.service';
@@ -22,6 +23,7 @@ import { SymptomApiService } from '../../core/services/symptom-api.service';
     BackButtonComponent,
     LanguageSwitcherComponent,
     LoadingIndicatorComponent,
+    UserMenuComponent,
   ],
   templateUrl: './disease-library.component.html',
   styleUrl: './disease-library.component.scss',

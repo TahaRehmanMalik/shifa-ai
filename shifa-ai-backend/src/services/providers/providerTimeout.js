@@ -6,7 +6,7 @@ class ProviderTimeoutError extends Error {
   }
 }
 
-// Shared AbortController-based timeout for providers that call fetch() directly.
+
 function createTimeoutSignal(timeoutMs) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);

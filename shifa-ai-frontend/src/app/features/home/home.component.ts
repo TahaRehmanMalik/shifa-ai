@@ -4,12 +4,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink } from '@angular/router';
 import { LanguageSwitcherComponent } from '../../shared/components/language-switcher/language-switcher.component';
+import { UserMenuComponent } from '../../shared/components/user-menu/user-menu.component';
 import { LanguageService } from '../../core/services/language.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [MatCardModule, MatIconModule, MatToolbarModule, RouterLink, LanguageSwitcherComponent],
+  imports: [MatCardModule, MatIconModule, MatToolbarModule, RouterLink, LanguageSwitcherComponent, UserMenuComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
