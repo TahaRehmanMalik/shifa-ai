@@ -1,0 +1,184 @@
+<mat-toolbar color="primary">
+  <app-back-button></app-back-button>
+  <span class="app-title">{{ text().pageTitle }}</span>
+  <span class="spacer"></span>
+  <app-language-switcher></app-language-switcher>
+  <app-user-menu></app-user-menu>
+</mat-toolbar>
+
+<main class="triage-main">
+  <mat-stepper #stepper linear [orientation]="isHandset() ? 'vertical' : 'horizontal'" class="triage-stepper">
+    <mat-step [stepControl]="patientGroup" [label]="text().stepPatient">
+      <form [formGroup]="patientGroup" class="step-form">
+        <fieldset class="question">
+          <legend id="age-group-label">{{ text().ageGroupLabel }}</legend>
+          <mat-radio-group formControlName="ageGroup" class="option-list" aria-labelledby="age-group-label">
+            @for (ageGroup of ageGroups; track ageGroup) {
+              <mat-radio-button [value]="ageGroup">{{ text().ageGroups[ageGroup] }}</mat-radio-button>
+            }
+          </mat-radio-group>
+          @if (patientGroup.controls.ageGroup.invalid && patientGroup.controls.ageGroup.touched) {
+            <mat-error class="inline-error">{{ text().ageGroupRequired }}</mat-error>
+          }
+        </fieldset>
+
+        <fieldset class="question">
+          <legend id="sex-label">{{ text().sexLabel }}</legend>
+          <mat-radio-group formControlName="sex" class="option-list" aria-labelledby="sex-label">
+            @for (sex of sexes; track sex) {
+              <mat-radio-button [value]="sex">{{ text().sexes[sex] }}</mat-radio-button>
+            }
+          </mat-radio-group>
+          @if (patientGroup.controls.sex.invalid && patientGroup.controls.sex.touched) {
+            <mat-error class="inline-error">{{ text().sexRequired }}</mat-error>
+          }
+        </fieldset>
+
+        @if (showPregnancyQuestion()) {
+          <fieldset class="question">
+            <legend id="pregnancy-label">{{ text().pregnancyLabel }}</legend>
+            <mat-radio-group formControlName="isPregnant" class="option-list" aria-labelledby="pregnancy-label">
+              <mat-radio-button [value]="true">{{ text().yes }}</mat-radio-button>
+              <mat-radio-button [value]="false">{{ text().no }}</mat-radio-button>
+            </mat-radio-group>
+            @if (patientGroup.controls.isPregnant.invalid && patientGroup.controls.isPregnant.touched) {
+              <mat-error class="inline-error">{{ text().pregnancyRequired }}</mat-error>
+            }
+          </fieldset>
+        }
+
+        <div class="step-actions">
+          <button mat-flat-button color="primary" type="button" (click)="advance(stepper, patientGroup)">
+            {{ text().next }}
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="problemGroup" [label]="text().stepProblem">
+      <form [formGroup]="problemGroup" class="step-form">
+        <div class="input-row">
+          <mat-form-field appearance="outline" class="complaint-field">
+            <mat-label>{{ text().complaintLabel }}</mat-label>
+            <textarea matInput rows="4" formControlName="mainComplaint" [maxlength]="maxComplaintLength"></textarea>
+            <mat-hint>{{ text().complaintHint }}</mat-hint>
+            @if (mainComplaintControl.hasError('required')) {
+              <mat-error>{{ text().complaintRequired }}</mat-error>
+            } @else if (mainComplaintControl.hasError('minlength')) {
+              <mat-error>{{ text().complaintTooShort }}</mat-error>
+            } @else if (mainComplaintControl.hasError('maxlength')) {
+              <mat-error>{{ text().complaintTooLong }}</mat-error>
+            }
+          </mat-form-field>
+          <app-voice-input-button (transcriptRecognized)="onTranscriptRecognized($event)"></app-voice-input-button>
+        </div>
+
+        <mat-form-field appearance="outline" class="duration-field">
+          <mat-label>{{ text().durationLabel }}</mat-label>
+          <input matInput type="number" inputmode="numeric" min="0" max="365" step="1" formControlName="durationDays" />
+          @if (durationDaysControl.hasError('required')) {
+            <mat-error>{{ text().durationRequired }}</mat-error>
+          } @else if (durationDaysControl.invalid) {
+            <mat-error>{{ text().durationInvalid }}</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="question">
+          <label id="severity-label" class="question-label">{{ text().severityLabel }}</label>
+          <div class="severity-row">
+            <mat-slider min="0" max="10" step="1" discrete showTickMarks class="severity-slider">
+              <input matSliderThumb formControlName="severity" aria-labelledby="severity-label" />
+            </mat-slider>
+            <span class="severity-value" aria-live="polite">
+              {{ severityControl.value === null ? text().severityNotSet : severityControl.value + ' / 10' }}
+            </span>
+          </div>
+          @if (severityControl.invalid && severityControl.touched) {
+            <mat-error class="inline-error">{{ text().severityRequired }}</mat-error>
+          }
+        </div>
+
+        <div class="step-actions">
+          <button mat-stroked-button type="button" matStepperPrevious>{{ text().back }}</button>
+          <button mat-flat-button color="primary" type="button" (click)="advance(stepper, problemGroup)">
+            {{ text().next }}
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="warningSignsGroup" [label]="text().stepWarningSigns">
+      <form [formGroup]="warningSignsGroup" class="step-form">
+        <fieldset class="question">
+          <legend>{{ text().warningSignsIntro }}</legend>
+          <div class="option-list" formGroupName="flags">
+            @for (redFlagId of visibleRedFlagIds(); track redFlagId) {
+              <mat-checkbox [formControlName]="redFlagId">{{ text().redFlags[redFlagId] }}</mat-checkbox>
+            }
+          </div>
+          <div class="option-list none-option">
+            <mat-checkbox formControlName="none">{{ text().noneOfThese }}</mat-checkbox>
+          </div>
+          @if (warningSignsGroup.invalid && noneOfTheseControl.touched) {
+            <mat-error class="inline-error">{{ text().warningSignsRequired }}</mat-error>
+          }
+        </fieldset>
+
+        <div class="step-actions">
+          <button mat-stroked-button type="button" matStepperPrevious>{{ text().back }}</button>
+          <button mat-flat-button color="primary" type="button" (click)="advance(stepper, warningSignsGroup)">
+            {{ text().next }}
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <mat-step [stepControl]="backgroundGroup" [label]="text().stepBackground">
+      <form [formGroup]="backgroundGroup" class="step-form">
+        <fieldset class="question">
+          <legend>{{ text().backgroundIntro }}</legend>
+          <div class="option-list" formGroupName="choices">
+            @for (conditionId of conditionIds; track conditionId) {
+              <mat-checkbox [formControlName]="conditionId">{{ text().conditions[conditionId] }}</mat-checkbox>
+            }
+            <mat-checkbox formControlName="other">{{ text().otherCondition }}</mat-checkbox>
+          </div>
+          @if (otherConditionsControl.enabled) {
+            <mat-form-field appearance="outline" class="other-conditions-field">
+              <mat-label>{{ text().otherConditionsLabel }}</mat-label>
+              <input matInput formControlName="otherText" [maxlength]="maxOtherConditionsLength" />
+              @if (otherConditionsControl.hasError('maxlength')) {
+                <mat-error>{{ text().otherConditionsTooLong }}</mat-error>
+              } @else if (otherConditionsControl.invalid) {
+                <mat-error>{{ text().otherConditionsRequired }}</mat-error>
+              }
+            </mat-form-field>
+          }
+          <div class="option-list none-option">
+            <mat-checkbox formControlName="none">{{ text().noConditions }}</mat-checkbox>
+          </div>
+          @if (backgroundGroup.hasError('noneOrChoiceRequired') && noConditionsControl.touched) {
+            <mat-error class="inline-error">{{ text().conditionsRequired }}</mat-error>
+          }
+        </fieldset>
+
+        <div class="step-actions">
+          <button mat-stroked-button type="button" matStepperPrevious [disabled]="isSubmitting()">
+            {{ text().back }}
+          </button>
+          <button mat-flat-button color="primary" type="button" [disabled]="isSubmitting()" (click)="submit()">
+            {{ text().submit }}
+          </button>
+        </div>
+
+        @if (isSubmitting()) {
+          <app-loading-indicator [message]="text().checking"></app-loading-indicator>
+        }
+
+        @if (submissionError()) {
+          <p class="submission-error" role="alert">{{ submissionError() }}</p>
+        }
+      </form>
+    </mat-step>
+  </mat-stepper>
+</main>

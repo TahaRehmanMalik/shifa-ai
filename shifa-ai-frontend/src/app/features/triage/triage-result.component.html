@@ -1,0 +1,131 @@
+<mat-toolbar color="primary">
+  <app-back-button></app-back-button>
+  <span class="app-title">{{ copy().resultTitle }}</span>
+  <span class="spacer"></span>
+  <app-language-switcher></app-language-switcher>
+  <app-user-menu></app-user-menu>
+</mat-toolbar>
+
+@if (response()) {
+  <main class="triage-result-main">
+    @if (isBlocked()) {
+      <mat-card class="message-card">
+        <mat-card-content>
+          <mat-icon class="message-icon" aria-hidden="true">report_problem</mat-icon>
+          <p>{{ blockedMessage() }}</p>
+        </mat-card-content>
+      </mat-card>
+    } @else {
+      @if (assessment(); as currentAssessment) {
+        @switch (currentAssessment.level) {
+          @case ('emergency') {
+            <mat-card class="emergency-card" role="alert">
+              <mat-card-content>
+                <mat-icon class="alert-icon" aria-hidden="true">emergency</mat-icon>
+                <p class="emergency-message">{{ assessmentMessage() }}</p>
+                <a class="call-link rescue-button" href="tel:1122">
+                  <mat-icon aria-hidden="true">call</mat-icon>
+                  {{ copy().callRescue }}
+                </a>
+                <p class="hospital-message">{{ assessmentAction() }}</p>
+              </mat-card-content>
+            </mat-card>
+            <app-triage-badge [level]="currentAssessment.level" [reasons]="currentAssessment.reasons"></app-triage-badge>
+          }
+          @case ('urgent') {
+            <mat-card class="escalation-card" role="alert">
+              <mat-card-content>
+                <mat-icon class="alert-icon" aria-hidden="true">local_hospital</mat-icon>
+                <p class="escalation-message">{{ assessmentMessage() }}</p>
+                <p class="escalation-action">{{ assessmentAction() }}</p>
+                <a class="call-link rescue-link" href="tel:1122">
+                  <mat-icon aria-hidden="true">call</mat-icon>
+                  {{ copy().callRescue }}
+                </a>
+              </mat-card-content>
+            </mat-card>
+            <app-triage-badge [level]="currentAssessment.level" [reasons]="currentAssessment.reasons"></app-triage-badge>
+            @if (advice(); as currentAdvice) {
+              <mat-accordion>
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>{{ copy().supportingAdvice }}</mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <app-triage-advice [advice]="currentAdvice"></app-triage-advice>
+                </mat-expansion-panel>
+              </mat-accordion>
+            }
+          }
+          @default {
+            <app-triage-badge [level]="currentAssessment.level" [reasons]="currentAssessment.reasons"></app-triage-badge>
+            <mat-card class="guidance-card">
+              <mat-card-content>
+                <p>{{ assessmentMessage() }}</p>
+              </mat-card-content>
+            </mat-card>
+            @if (advice(); as currentAdvice) {
+              <app-triage-advice [advice]="currentAdvice"></app-triage-advice>
+            }
+          }
+        }
+      }
+    }
+
+    @if (advice() && languageService.currentLanguage() === 'pa') {
+      @if (isTranslatingToPunjabi()) {
+        <div class="translation-status" role="status">
+          <mat-spinner diameter="18"></mat-spinner>
+          <span>{{ copy().translatingToPunjabi }}</span>
+        </div>
+      } @else if (punjabiTranslationFailed()) {
+        <div class="translation-status translation-status-failed" role="status">
+          <span>{{ copy().punjabiTranslationFailed }}</span>
+        </div>
+      }
+    }
+
+    <app-disclaimer-banner
+      [disclaimerEn]="disclaimer().en"
+      [disclaimerUr]="disclaimer().ur"
+      [disclaimerPa]="disclaimer().pa"
+    ></app-disclaimer-banner>
+
+    @if (allowsFollowUp()) {
+      @if (followUpMessages().length > 0) {
+        <div class="follow-up-thread">
+          @for (message of followUpMessages(); track $index) {
+            <div class="chat-row" [class.chat-row-user]="message.role === 'user'">
+              <div class="chat-bubble" [class.chat-bubble-user]="message.role === 'user'">{{ message.text }}</div>
+            </div>
+          }
+        </div>
+      }
+
+      <form class="follow-up-form" [formGroup]="followUpForm" (ngSubmit)="sendFollowUp()">
+        <mat-form-field appearance="outline" class="follow-up-field">
+          <mat-label>{{ copy().followUpLabel }}</mat-label>
+          <input matInput formControlName="followUpText" />
+        </mat-form-field>
+        <app-voice-input-button (transcriptRecognized)="onTranscriptRecognized($event)"></app-voice-input-button>
+        <button
+          mat-icon-button
+          color="primary"
+          type="submit"
+          class="follow-up-send"
+          [attr.aria-label]="copy().sendFollowUp"
+          [disabled]="followUpControl.invalid || isSendingFollowUp()"
+        >
+          @if (isSendingFollowUp()) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            <mat-icon>send</mat-icon>
+          }
+        </button>
+      </form>
+    }
+
+    <button mat-stroked-button type="button" class="new-check-button" (click)="startNewCheck()">
+      {{ copy().startNewCheck }}
+    </button>
+  </main>
+}

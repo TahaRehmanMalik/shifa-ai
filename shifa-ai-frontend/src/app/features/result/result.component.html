@@ -8,6 +8,18 @@
 
 @if (result(); as currentResult) {
   <main class="result-main">
+    @if (languageService.currentLanguage() === 'pa') {
+      @if (isTranslatingToPunjabi()) {
+        <div class="translation-status" role="status">
+          <mat-spinner diameter="18"></mat-spinner>
+          <span>پنجابی وچ ترجمہ ہو رہیا اے...</span>
+        </div>
+      } @else if (punjabiTranslationFailed()) {
+        <div class="translation-status translation-status-failed" role="status">
+          <span>پنجابی ترجمہ نئیں ہو سکیا، ایس لئی اردو وچ وکھایا جا رہیا اے۔</span>
+        </div>
+      }
+    }
     @switch (currentResult.response_type) {
       @case ('medicine_info') {
         <mat-card>
@@ -23,11 +35,7 @@
               }
             </p>
             <p>
-              {{
-                languageService.currentLanguage() === 'en'
-                  ? currentResult.medicine_summary_en
-                  : currentResult.medicine_summary_ur
-              }}
+              {{ text(currentResult, 'medicine_summary') }}
             </p>
           </mat-card-content>
         </mat-card>
@@ -35,13 +43,14 @@
         <app-disclaimer-banner
           [disclaimerEn]="currentResult.disclaimer_en ?? ''"
           [disclaimerUr]="currentResult.disclaimer_ur ?? ''"
+          [disclaimerPa]="currentResult.disclaimer_pa ?? ''"
         ></app-disclaimer-banner>
       }
       @case ('off_topic') {
         <mat-card class="message-card">
           <mat-card-content>
             <mat-icon class="message-icon">info</mat-icon>
-            <p>{{ languageService.currentLanguage() === 'en' ? currentResult.message_en : currentResult.message_ur }}</p>
+            <p>{{ text(currentResult, 'message') }}</p>
           </mat-card-content>
         </mat-card>
       }
@@ -49,7 +58,7 @@
         <mat-card class="message-card">
           <mat-card-content>
             <mat-icon class="message-icon message-icon-warn">report_problem</mat-icon>
-            <p>{{ languageService.currentLanguage() === 'en' ? currentResult.message_en : currentResult.message_ur }}</p>
+            <p>{{ text(currentResult, 'message') }}</p>
           </mat-card-content>
         </mat-card>
       }
@@ -57,7 +66,7 @@
         <mat-card>
           <mat-card-header>
             <mat-card-title>
-              {{ languageService.currentLanguage() === 'en' ? currentResult.condition_en : currentResult.condition_ur }}
+              {{ text(currentResult, 'condition') }}
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
@@ -77,9 +86,7 @@
           </mat-card-header>
           <mat-card-content>
             <p>
-              {{
-                languageService.currentLanguage() === 'en' ? currentResult.root_cause_en : currentResult.root_cause_ur
-              }}
+              {{ text(currentResult, 'root_cause') }}
             </p>
           </mat-card-content>
         </mat-card>
@@ -90,7 +97,7 @@
           </mat-card-header>
           <mat-card-content>
             <p>
-              {{ languageService.currentLanguage() === 'en' ? currentResult.diet_plan_en : currentResult.diet_plan_ur }}
+              {{ text(currentResult, 'diet_plan') }}
             </p>
           </mat-card-content>
         </mat-card>
@@ -101,11 +108,7 @@
           </mat-card-header>
           <mat-card-content>
             <p>
-              {{
-                languageService.currentLanguage() === 'en'
-                  ? currentResult.medicine_class_en
-                  : currentResult.medicine_class_ur
-              }}
+              {{ text(currentResult, 'medicine_class') }}
             </p>
           </mat-card-content>
         </mat-card>
@@ -130,6 +133,7 @@
         <app-disclaimer-banner
           [disclaimerEn]="currentResult.disclaimer_en ?? ''"
           [disclaimerUr]="currentResult.disclaimer_ur ?? ''"
+          [disclaimerPa]="currentResult.disclaimer_pa ?? ''"
         ></app-disclaimer-banner>
       }
     }

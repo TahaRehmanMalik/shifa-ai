@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { environment } from '../environments/environment';
 
 export const routes: Routes = [
   {
@@ -33,6 +34,17 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () => import('./features/history/history.routes').then((m) => m.HISTORY_ROUTES),
   },
+  environment.triageEnabled
+    ? {
+        path: 'triage',
+        canActivate: [authGuard],
+        loadChildren: () => import('./features/triage/triage.routes').then((m) => m.TRIAGE_ROUTES),
+      }
+    : {
+        path: 'triage',
+        pathMatch: 'prefix',
+        redirectTo: '/',
+      },
   {
     path: '**',
     redirectTo: '',

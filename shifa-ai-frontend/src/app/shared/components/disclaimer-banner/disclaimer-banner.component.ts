@@ -16,6 +16,7 @@ export class DisclaimerBannerComponent {
 
   private readonly disclaimerEnSignal = signal('');
   private readonly disclaimerUrSignal = signal('');
+  private readonly disclaimerPaSignal = signal('');
 
   @Input({ required: true })
   set disclaimerEn(value: string) {
@@ -27,7 +28,19 @@ export class DisclaimerBannerComponent {
     this.disclaimerUrSignal.set(value);
   }
 
-  readonly disclaimerText = computed(() =>
-    this.languageService.currentLanguage() === 'en' ? this.disclaimerEnSignal() : this.disclaimerUrSignal()
-  );
+  @Input()
+  set disclaimerPa(value: string) {
+    this.disclaimerPaSignal.set(value);
+  }
+
+  readonly disclaimerText = computed(() => {
+    const language = this.languageService.currentLanguage();
+    if (language === 'en') {
+      return this.disclaimerEnSignal();
+    }
+    if (language === 'pa') {
+      return this.disclaimerPaSignal() || this.disclaimerUrSignal();
+    }
+    return this.disclaimerUrSignal();
+  });
 }

@@ -15,6 +15,9 @@ import { ConversationService } from '../../core/services/conversation.service';
 import { LanguageService } from '../../core/services/language.service';
 import { ResultService } from '../../core/services/result.service';
 import { extractResponseSummary } from '../../core/utils/response-summary';
+import { environment } from '../../../environments/environment';
+import { restoreTriageConversation } from '../triage/triage-history';
+import { TriageStateService } from '../triage/triage-state.service';
 
 @Component({
   selector: 'app-history',
@@ -36,6 +39,7 @@ import { extractResponseSummary } from '../../core/utils/response-summary';
 export class HistoryComponent {
   private readonly conversationService = inject(ConversationService);
   private readonly resultService = inject(ResultService);
+  private readonly triageStateService = inject(TriageStateService);
   private readonly router = inject(Router);
   protected readonly languageService = inject(LanguageService);
 
@@ -51,6 +55,15 @@ export class HistoryComponent {
 
   protected openConversation(conversation: ConversationSummary): void {
     this.conversationService.getMessages(conversation.id).subscribe((messages) => {
+      const restoredTriage = environment.triageEnabled
+        ? restoreTriageConversation(messages, this.languageService.currentLanguage())
+        : null;
+      if (restoredTriage) {
+        this.triageStateService.restore(restoredTriage.response, String(conversation.id), restoredTriage.followUpMessages);
+        this.router.navigate(['/triage/result']);
+        return;
+      }
+
       const lastAssistantMessage = [...messages].reverse().find((message) => message.role === 'assistant');
       if (!lastAssistantMessage) {
         return;

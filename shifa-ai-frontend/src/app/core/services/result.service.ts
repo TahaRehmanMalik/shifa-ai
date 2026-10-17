@@ -20,6 +20,10 @@ export class ResultService {
     }
   }
 
+  mergeIntoResult(fields: Partial<HealthResponse>): void {
+    this.currentResultSignal.update((result) => (result ? { ...result, ...fields } : result));
+  }
+
   setConversationId(conversationId: string): void {
     this.conversationIdSignal.set(conversationId);
   }

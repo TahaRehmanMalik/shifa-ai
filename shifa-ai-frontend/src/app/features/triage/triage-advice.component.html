@@ -1,0 +1,84 @@
+@if (advice().response_type === 'medicine_info') {
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ copy().medicineInformation }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p class="source-caption">
+        @if (advice().source === 'database') {
+          {{ copy().sourceDatabase }}
+        } @else {
+          {{ copy().sourceAi }}@if (advice().provider) { ({{ advice().provider }})}
+        }
+      </p>
+      <p>{{ text('medicine_summary') }}</p>
+    </mat-card-content>
+  </mat-card>
+} @else {
+  <mat-card>
+    @if (text('condition')) {
+      <mat-card-header>
+        <mat-card-title>{{ text('condition') }}</mat-card-title>
+      </mat-card-header>
+    }
+    <mat-card-content>
+      <p class="source-caption">
+        @if (advice().source === 'database') {
+          {{ copy().sourceDatabase }}
+        } @else {
+          {{ copy().sourceAi }}@if (advice().provider) { ({{ advice().provider }})}
+        }
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  @if (text('root_cause')) {
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ copy().rootCause }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ text('root_cause') }}</p>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (text('diet_plan')) {
+    <mat-card class="diet-plan-card">
+      <mat-card-header>
+        <mat-card-title>{{ copy().dietPlan }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ text('diet_plan') }}</p>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (text('medicine_class')) {
+    <mat-card class="medicine-class-card">
+      <mat-card-header>
+        <mat-card-title>{{ copy().medicineClass }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ text('medicine_class') }}</p>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if ((advice().citations?.length ?? 0) > 0 && advice().groundedInSearch) {
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ copy().sources }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <ul class="citation-list">
+          @for (citation of advice().citations; track citation) {
+            <li>
+              <a [href]="citation" target="_blank" rel="noopener noreferrer">{{ citation }}</a>
+            </li>
+          }
+        </ul>
+      </mat-card-content>
+    </mat-card>
+  }
+}

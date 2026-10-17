@@ -1,0 +1,35 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.source-caption {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.diet-plan-card {
+  border: 2px solid #00897b;
+  box-shadow: 0 4px 20px rgba(0, 137, 123, 0.2);
+
+  mat-card-title {
+    color: #00897b;
+  }
+}
+
+.medicine-class-card {
+  opacity: 0.85;
+  font-size: 0.9rem;
+}
+
+.citation-list {
+  margin: 0;
+  padding-inline-start: 20px;
+
+  li {
+    margin-bottom: 4px;
+    overflow-wrap: anywhere;
+  }
+}

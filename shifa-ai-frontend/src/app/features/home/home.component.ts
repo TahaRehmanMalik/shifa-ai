@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { LanguageSwitcherComponent } from '../../shared/components/language-switcher/language-switcher.component';
 import { UserMenuComponent } from '../../shared/components/user-menu/user-menu.component';
 import { LanguageService } from '../../core/services/language.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -28,5 +29,13 @@ export class HomeComponent {
     en: 'Understand your symptoms with confidence',
     ur: 'اپنی علامات کو اعتماد کے ساتھ سمجھیں',
     pa: 'اپنی علامات نوں اعتماد نال سمجھو',
+  };
+
+  protected readonly triageEnabled = environment.triageEnabled;
+
+  protected readonly triageCardLabelByLanguage: Record<string, string> = {
+    en: 'Check how urgent this is',
+    ur: 'جانچیں کہ یہ کتنا فوری ہے',
+    pa: 'ویکھو ایہہ کنا ضروری اے',
   };
 }

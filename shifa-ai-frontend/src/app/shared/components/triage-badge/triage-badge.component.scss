@@ -1,0 +1,54 @@
+:host {
+  display: block;
+}
+
+.triage-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: 22px;
+  font-weight: 600;
+  font-size: 1rem;
+  border: 2px solid currentColor;
+}
+
+.triage-badge-emergency {
+  background-color: #c62828;
+  color: #fff;
+}
+
+.triage-badge-urgent {
+  background-color: #e65100;
+  color: #fff;
+}
+
+.triage-badge-soon {
+  background-color: #ffc107;
+  color: #3e2723;
+}
+
+.triage-badge-self_care {
+  background-color: #2e7d32;
+  color: #fff;
+}
+
+.triage-reasons {
+  margin-top: 12px;
+
+  ul {
+    margin: 4px 0 0;
+    padding-inline-start: 20px;
+  }
+
+  li {
+    margin-bottom: 4px;
+    line-height: 1.5;
+  }
+}
+
+.triage-reasons-title {
+  margin: 0;
+  font-weight: 600;
+}

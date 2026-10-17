@@ -17,9 +17,11 @@ import { VoiceInputButtonComponent } from '../../shared/components/voice-input-b
 import { UserMenuComponent } from '../../shared/components/user-menu/user-menu.component';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { NormalizedHttpError } from '../../core/interceptors/error.interceptor';
+import { HealthResponse, LocalizedField } from '../../core/models/health-response.model';
 import { LanguageService } from '../../core/services/language.service';
 import { ResultService } from '../../core/services/result.service';
 import { SymptomApiService } from '../../core/services/symptom-api.service';
+import { localizedText, needsPunjabiTranslation } from '../../core/utils/localized-text';
 import { extractResponseSummary } from '../../core/utils/response-summary';
 
 @Component({
@@ -64,6 +66,10 @@ export class ResultComponent {
 
   protected readonly followUpMessages = this.resultService.followUpMessages;
   protected readonly isSendingFollowUp = signal(false);
+  protected readonly isTranslatingToPunjabi = signal(false);
+  protected readonly punjabiTranslationFailed = signal(false);
+
+  private punjabiTranslationAttemptedFor: HealthResponse | null = null;
 
   constructor() {
     effect(() => {
@@ -71,6 +77,42 @@ export class ResultComponent {
         this.router.navigate(['/']);
       }
     });
+
+    effect(
+      () => {
+        const currentResult = this.result();
+        if (this.languageService.currentLanguage() === 'pa' && currentResult) {
+          this.translateToPunjabiIfNeeded(currentResult);
+        }
+      },
+      { allowSignalWrites: true }
+    );
+  }
+
+  protected text(result: HealthResponse, field: LocalizedField): string {
+    return localizedText(result, field, this.languageService.currentLanguage());
+  }
+
+  private translateToPunjabiIfNeeded(result: HealthResponse): void {
+    if (!needsPunjabiTranslation(result) || this.punjabiTranslationAttemptedFor === result) {
+      return;
+    }
+
+    this.punjabiTranslationAttemptedFor = result;
+    this.punjabiTranslationFailed.set(false);
+    this.isTranslatingToPunjabi.set(true);
+
+    this.symptomApiService
+      .translateToPunjabi(result)
+      .pipe(finalize(() => this.isTranslatingToPunjabi.set(false)))
+      .subscribe({
+        next: (translation) => {
+          if (this.result() === result) {
+            this.resultService.mergeIntoResult(translation);
+          }
+        },
+        error: () => this.punjabiTranslationFailed.set(true),
+      });
   }
 
   protected sendFollowUp(): void {

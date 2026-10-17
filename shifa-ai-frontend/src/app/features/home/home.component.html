@@ -27,5 +27,20 @@
         </mat-card-content>
       </mat-card>
     </a>
+
+    @if (triageEnabled) {
+      <a
+        routerLink="/triage"
+        class="action-link action-link-wide"
+        [attr.aria-label]="triageCardLabelByLanguage[languageService.currentLanguage()]"
+      >
+        <mat-card class="action-card">
+          <mat-card-content>
+            <mat-icon class="action-icon" aria-hidden="true">health_and_safety</mat-icon>
+            <h2>{{ triageCardLabelByLanguage[languageService.currentLanguage()] }}</h2>
+          </mat-card-content>
+        </mat-card>
+      </a>
+    }
   </div>
 </main>

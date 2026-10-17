@@ -1,16 +1,15 @@
 import { AppLanguage, HealthResponse } from '../models/health-response.model';
+import { localizedText } from './localized-text';
 
 export function extractResponseSummary(result: HealthResponse, language: AppLanguage): string {
-  const isEnglish = language === 'en';
-
   switch (result.response_type) {
     case 'medicine_info':
-      return (isEnglish ? result.medicine_summary_en : result.medicine_summary_ur) ?? '';
+      return localizedText(result, 'medicine_summary', language);
     case 'off_topic':
     case 'unsafe_request':
-      return (isEnglish ? result.message_en : result.message_ur) ?? '';
+      return localizedText(result, 'message', language);
     case 'health_query':
     default:
-      return (isEnglish ? result.root_cause_en : result.root_cause_ur) ?? '';
+      return localizedText(result, 'root_cause', language);
   }
 }

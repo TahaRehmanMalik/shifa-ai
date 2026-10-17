@@ -34,6 +34,10 @@
   display: block;
 }
 
+.action-link-wide {
+  grid-column: 1 / -1;
+}
+
 .action-card {
   min-height: 160px;
   display: flex;
