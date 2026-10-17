@@ -7,9 +7,11 @@ const { getActiveProviderName } = require('./services/aiService');
 const searchRoutes = require('./routes/searchRoutes');
 const conversationRoutes = require('./routes/conversationRoutes');
 const authRoutes = require('./routes/authRoutes');
+const triageRoutes = require('./routes/triageRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const TRIAGE_ENABLED = String(process.env.TRIAGE_ENABLED ?? 'true').trim().toLowerCase() !== 'false';
 
 app.use(
   cors({
@@ -31,6 +33,9 @@ app.get('/health', (req, res) => {
 app.use('/api', authRoutes);
 app.use('/api', searchRoutes);
 app.use('/api', conversationRoutes);
+if (TRIAGE_ENABLED) {
+  app.use('/api', triageRoutes);
+}
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Not found' });

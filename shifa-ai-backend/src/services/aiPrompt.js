@@ -4,6 +4,13 @@ const DISCLAIMER_EN =
 const DISCLAIMER_UR =
   'شفاء AI صرف صحت سے متعلق آگاہی اور تعلیم فراہم کرتا ہے۔ یہ طبی تشخیص یا نسخہ نہیں ہے۔ اگر علامات شدید ہوں یا طبیعت بگڑے، تو فوری طور پر قریبی سرکاری ہسپتال یا بنیادی مرکز صحت (BHU) جائیں۔';
 
+const DISCLAIMER_PA =
+  'شفاء AI صرف صحت بارے جانکاری تے تعلیم دیندا اے۔ ایہہ ڈاکٹری تشخیص یا نسخہ نئیں اے۔ جے علامتاں شدید ہون یا طبیعت وگڑے، تے فوراً نیڑے دے سرکاری ہسپتال یا بنیادی مرکز صحت (BHU) جاؤ۔';
+
+const PUNJABI_FIELD_INSTRUCTIONS = `
+
+Because the user selected Punjabi, also add these extra keys to the same JSON object: "condition_pa", "root_cause_pa", "diet_plan_pa", "medicine_class_pa", "medicine_summary_pa". Fill each one with the same content as its Urdu counterpart, written in natural Punjabi using the Shahmukhi (Perso-Arabic) script as spoken in Pakistani Punjab — never Gurmukhi, and never plain Urdu. Keep medicine names, abbreviations (such as ORS or PPIs) and numbers unchanged. Leave a "_pa" key as an empty string whenever its Urdu counterpart is empty.`;
+
 const SYSTEM_PROMPT = `You are the AI fallback engine for Shifa AI, a bilingual (Urdu/English) health-education platform for Pakistan-focused users. A user has sent a query that was not found in the platform's curated, human-reviewed medical database, so you are being asked to help. The query may describe a symptom, ask about a medicine, or be something entirely unrelated — your first job is to classify it correctly before answering.
 
 You must always search the web before answering a "health_query" or "medicine_info", every single time, regardless of how familiar or "stable" the topic seems. Never answer purely from training data. Prefer recent, reputable medical or nutrition sources (hospitals, health ministries, medical associations, peer-reviewed publications, established health information sites). List every source you actually used in the "citations" array as full URLs. If your search tool returns no usable results for some reason, say so honestly inside root_cause_en and root_cause_ur instead of silently answering from memory, and leave "citations" as an empty array.
@@ -52,7 +59,7 @@ function buildUserPrompt(symptomText, language) {
 
 First classify this as "health_query", "medicine_info", "off_topic", or "unsafe_request". For "health_query" and "medicine_info", you must search the web for current information before answering — do not answer from memory alone, and list every source you used.
 
-Based on your classification (and search results, where applicable), respond with the JSON object described in your instructions, fully filled in for both English and Urdu, regardless of what language the query was written in.`;
+Based on your classification (and search results, where applicable), respond with the JSON object described in your instructions, fully filled in for both English and Urdu, regardless of what language the query was written in.${language === 'pa' ? PUNJABI_FIELD_INSTRUCTIONS : ''}`;
 }
 
-module.exports = { SYSTEM_PROMPT, buildUserPrompt, DISCLAIMER_EN, DISCLAIMER_UR };
+module.exports = { SYSTEM_PROMPT, buildUserPrompt, DISCLAIMER_EN, DISCLAIMER_UR, DISCLAIMER_PA };

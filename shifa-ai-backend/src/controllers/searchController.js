@@ -2,7 +2,9 @@ const diseaseService = require('../services/diseaseService');
 const aiService = require('../services/aiService');
 const logService = require('../services/logService');
 const conversationService = require('../services/conversationService');
-const { DISCLAIMER_EN, DISCLAIMER_UR } = require('../services/aiPrompt');
+const punjabiTranslationService = require('../services/punjabiTranslationService');
+const crisisService = require('../services/crisisService');
+const { DISCLAIMER_EN, DISCLAIMER_UR, DISCLAIMER_PA } = require('../services/aiPrompt');
 
 const VALID_LANGUAGES = ['en', 'ur', 'pa'];
 const VALID_INPUT_MODES = ['text', 'voice'];
@@ -22,16 +24,27 @@ const OFF_TOPIC_MESSAGE_EN =
 const OFF_TOPIC_MESSAGE_UR =
   'شفاء AI صرف علامات، بیماریوں یا ادویات سے متعلق سوالات میں مدد کر سکتا ہے۔ براہ کرم اپنا صحت سے متعلق مسئلہ بیان کریں۔';
 
+const OFF_TOPIC_MESSAGE_PA =
+  'شفاء AI صرف علامتاں، بیماریاں یا دوائیاں بارے سوالاں وچ مدد کر سکدا اے۔ مہربانی کر کے اپنی صحت دا مسئلہ دسو۔';
+
 const UNSAFE_MESSAGE_EN =
   "We're not able to provide this information as it could be harmful. Please visit your nearest hospital and consult a doctor.";
 const UNSAFE_MESSAGE_UR =
   'ہم یہ معلومات فراہم نہیں کر سکتے کیونکہ یہ نقصان دہ ہو سکتی ہے۔ براہ کرم اپنے قریبی ہسپتال جائیں اور ڈاکٹر سے مشورہ کریں۔';
+
+const UNSAFE_MESSAGE_PA =
+  'اسیں ایہہ جانکاری نئیں دے سکدے کیوں جے ایہہ نقصان دہ ہو سکدی اے۔ مہربانی کر کے اپنے نیڑے دے ہسپتال جاؤ تے ڈاکٹر نال صلاح کرو۔';
+
+function punjabiTextOrNull(value) {
+  return typeof value === 'string' && value.trim() ? value : null;
+}
 
 function buildOffTopicResponse() {
   return {
     response_type: 'off_topic',
     message_en: OFF_TOPIC_MESSAGE_EN,
     message_ur: OFF_TOPIC_MESSAGE_UR,
+    message_pa: OFF_TOPIC_MESSAGE_PA,
   };
 }
 
@@ -40,6 +53,7 @@ function buildUnsafeResponse() {
     response_type: 'unsafe_request',
     message_en: UNSAFE_MESSAGE_EN,
     message_ur: UNSAFE_MESSAGE_UR,
+    message_pa: UNSAFE_MESSAGE_PA,
   };
 }
 
@@ -80,8 +94,10 @@ function shapeAiResult(parsed) {
       response_type: 'medicine_info',
       medicine_summary_en: parsed.medicine_summary_en || '',
       medicine_summary_ur: parsed.medicine_summary_ur || '',
+      medicine_summary_pa: punjabiTextOrNull(parsed.medicine_summary_pa),
       disclaimer_en: DISCLAIMER_EN,
       disclaimer_ur: DISCLAIMER_UR,
+      disclaimer_pa: DISCLAIMER_PA,
     };
   }
 
@@ -97,14 +113,19 @@ function shapeAiResult(parsed) {
     response_type: 'health_query',
     condition_en: parsed.condition_en,
     condition_ur: parsed.condition_ur,
+    condition_pa: punjabiTextOrNull(parsed.condition_pa),
     root_cause_en: parsed.root_cause_en,
     root_cause_ur: parsed.root_cause_ur,
+    root_cause_pa: punjabiTextOrNull(parsed.root_cause_pa),
     diet_plan_en: parsed.diet_plan_en,
     diet_plan_ur: parsed.diet_plan_ur,
+    diet_plan_pa: punjabiTextOrNull(parsed.diet_plan_pa),
     medicine_class_en: parsed.medicine_class_en,
     medicine_class_ur: parsed.medicine_class_ur,
+    medicine_class_pa: punjabiTextOrNull(parsed.medicine_class_pa),
     disclaimer_en: DISCLAIMER_EN,
     disclaimer_ur: DISCLAIMER_UR,
+    disclaimer_pa: DISCLAIMER_PA,
     citations: Array.isArray(parsed.citations) ? parsed.citations : [],
   };
 }
@@ -134,18 +155,22 @@ async function search(req, res) {
       resolvedConversationId = await conversationService.createConversation(req.userId);
     }
 
-    if (containsUnsafeContent(symptomText)) {
-      const unsafeResponse = buildUnsafeResponse();
+    const fixedResponse = crisisService.containsSelfHarmContent(symptomText)
+      ? { source: 'crisis', payload: crisisService.buildCrisisResponse() }
+      : containsUnsafeContent(symptomText)
+        ? { source: 'blocked', payload: buildUnsafeResponse() }
+        : null;
 
+    if (fixedResponse) {
       await conversationService.saveMessage(resolvedConversationId, 'user', symptomText);
-      await conversationService.saveMessage(resolvedConversationId, 'assistant', JSON.stringify(unsafeResponse));
+      await conversationService.saveMessage(resolvedConversationId, 'assistant', JSON.stringify(fixedResponse.payload));
 
       const totalEndAt = Date.now();
       console.log(
-        `[searchController][timing] total source=blocked start=${requestStartIso} end=${new Date(totalEndAt).toISOString()} elapsedMs=${totalEndAt - startedAt}`
+        `[searchController][timing] total source=${fixedResponse.source} start=${requestStartIso} end=${new Date(totalEndAt).toISOString()} elapsedMs=${totalEndAt - startedAt}`
       );
 
-      return res.json({ source: 'blocked', conversationId: resolvedConversationId, ...unsafeResponse });
+      return res.json({ source: fixedResponse.source, conversationId: resolvedConversationId, ...fixedResponse.payload });
     }
 
     const isFollowUp = Boolean(conversationId) && looksLikeFollowUp(symptomText);
@@ -248,4 +273,28 @@ async function getDisease(req, res) {
   }
 }
 
-module.exports = { search, listDiseases, getDisease };
+async function translateToPunjabi(req, res) {
+  const { result } = req.body;
+
+  if (!result || typeof result !== 'object' || Array.isArray(result)) {
+    return res.status(400).json({ error: 'result is required' });
+  }
+
+  try {
+    const translated = await punjabiTranslationService.translateResultToPunjabi(result);
+    return res.json({ ...translated, disclaimer_pa: DISCLAIMER_PA });
+  } catch (error) {
+    console.error('[searchController] translateToPunjabi failed:', error);
+    return res.status(502).json({ error: error.message });
+  }
+}
+
+module.exports = {
+  search,
+  listDiseases,
+  getDisease,
+  translateToPunjabi,
+  containsUnsafeContent,
+  buildUnsafeResponse,
+  shapeAiResult,
+};

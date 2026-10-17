@@ -2,6 +2,7 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const mysql = require('mysql2/promise');
+const { punjabiContentByEnglishName } = require('./punjabiContent');
 
 const diseases = [
   {
@@ -241,35 +242,60 @@ async function run() {
     }
   }
 
+  const punjabiColumns = [
+    'symptoms_pa TEXT NULL AFTER symptoms_ur',
+    'root_cause_pa TEXT NULL AFTER root_cause_ur',
+    'diet_plan_pa TEXT NULL AFTER diet_plan_ur',
+    'medicine_class_pa TEXT NULL AFTER medicine_class_ur',
+  ];
+  for (const columnDefinition of punjabiColumns) {
+    try {
+      await connection.query(`ALTER TABLE diseases ADD COLUMN ${columnDefinition}`);
+    } catch (error) {
+      if (error.code !== 'ER_DUP_FIELDNAME') {
+        throw error;
+      }
+    }
+  }
+
   for (const disease of diseases) {
+    const punjabi = punjabiContentByEnglishName[disease.name_en] || {};
     await connection.query(
       `INSERT INTO diseases
-        (name_en, name_ur, name_pa, symptoms_en, symptoms_ur, root_cause_en, root_cause_ur, diet_plan_en, diet_plan_ur, medicine_class_en, medicine_class_ur, search_keywords)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (name_en, name_ur, name_pa, symptoms_en, symptoms_ur, symptoms_pa, root_cause_en, root_cause_ur, root_cause_pa, diet_plan_en, diet_plan_ur, diet_plan_pa, medicine_class_en, medicine_class_ur, medicine_class_pa, search_keywords)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        ON DUPLICATE KEY UPDATE
         name_ur = VALUES(name_ur),
         name_pa = VALUES(name_pa),
         symptoms_en = VALUES(symptoms_en),
         symptoms_ur = VALUES(symptoms_ur),
+        symptoms_pa = VALUES(symptoms_pa),
         root_cause_en = VALUES(root_cause_en),
         root_cause_ur = VALUES(root_cause_ur),
+        root_cause_pa = VALUES(root_cause_pa),
         diet_plan_en = VALUES(diet_plan_en),
         diet_plan_ur = VALUES(diet_plan_ur),
+        diet_plan_pa = VALUES(diet_plan_pa),
         medicine_class_en = VALUES(medicine_class_en),
         medicine_class_ur = VALUES(medicine_class_ur),
+        medicine_class_pa = VALUES(medicine_class_pa),
         search_keywords = VALUES(search_keywords)`,
       [
         disease.name_en,
         disease.name_ur,
-        disease.name_pa,
+        punjabi.name_pa || disease.name_pa,
         disease.symptoms_en,
         disease.symptoms_ur,
+        punjabi.symptoms_pa || null,
         disease.root_cause_en,
         disease.root_cause_ur,
+        punjabi.root_cause_pa || null,
         disease.diet_plan_en,
         disease.diet_plan_ur,
+        punjabi.diet_plan_pa || null,
         disease.medicine_class_en,
         disease.medicine_class_ur,
+        punjabi.medicine_class_pa || null,
         disease.search_keywords,
       ]
     );

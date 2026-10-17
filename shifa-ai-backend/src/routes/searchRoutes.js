@@ -5,6 +5,7 @@ const requireAuth = require('../middleware/requireAuth');
 const router = express.Router();
 
 router.post('/search', requireAuth, searchController.search);
+router.post('/translate/punjabi', requireAuth, searchController.translateToPunjabi);
 router.get('/diseases', searchController.listDiseases);
 router.get('/diseases/:id', searchController.getDisease);
 

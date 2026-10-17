@@ -1,0 +1,218 @@
+{
+  "source": "Rules adapted from published triage protocols: Manchester Triage System discriminators, WHO Emergency Triage Assessment and Treatment (ETAT) emergency and priority signs, and NHS red-flag symptom lists. These rules are NOT clinically validated and must be reviewed by a qualified clinician before being relied on for patient care.",
+  "version": 1,
+  "levelOrder": ["self_care", "soon", "urgent", "emergency"],
+  "escalationLevels": ["urgent", "emergency"],
+  "levels": {
+    "emergency": {
+      "message_en": "This may be a medical emergency. Call Rescue 1122 now or go to the emergency department of the nearest hospital immediately. Do not wait to see if the symptoms improve.",
+      "message_ur": "یہ طبی ایمرجنسی ہو سکتی ہے۔ ابھی ریسکیو 1122 پر کال کریں یا فوراً قریبی ہسپتال کی ایمرجنسی میں جائیں۔ علامات کے بہتر ہونے کا انتظار نہ کریں۔",
+      "action_en": "Call Rescue 1122 or go to the nearest hospital emergency department now.",
+      "action_ur": "ابھی ریسکیو 1122 پر کال کریں یا قریبی ہسپتال کی ایمرجنسی میں جائیں۔"
+    },
+    "urgent": {
+      "message_en": "Your symptoms need to be checked by a doctor today. Please go to the nearest government hospital or BHU (Basic Health Unit) within the next few hours. If your symptoms get worse, call Rescue 1122.",
+      "message_ur": "آپ کی علامات کا آج ہی کسی ڈاکٹر سے معائنہ ضروری ہے۔ براہ کرم اگلے چند گھنٹوں میں قریبی سرکاری ہسپتال یا بی ایچ یو (بنیادی مرکزِ صحت) جائیں۔ اگر علامات بگڑ جائیں تو ریسکیو 1122 پر کال کریں۔",
+      "action_en": "See a doctor today at the nearest government hospital or BHU.",
+      "action_ur": "آج ہی قریبی سرکاری ہسپتال یا بی ایچ یو میں ڈاکٹر کو دکھائیں۔"
+    },
+    "soon": {
+      "message_en": "Your symptoms should be checked by a doctor. Arrange a visit with a doctor or your nearest BHU within the next 1 to 2 days, and seek help sooner if they get worse.",
+      "message_ur": "آپ کی علامات کا کسی ڈاکٹر سے معائنہ ہونا چاہیے۔ اگلے 1 سے 2 دن میں کسی ڈاکٹر یا قریبی بی ایچ یو سے رجوع کریں، اور اگر علامات بگڑیں تو جلد مدد حاصل کریں۔",
+      "action_en": "See a doctor within 1 to 2 days.",
+      "action_ur": "1 سے 2 دن کے اندر ڈاکٹر سے ملیں۔"
+    },
+    "self_care": {
+      "message_en": "Your symptoms can usually be managed at home. Rest, drink plenty of fluids and keep an eye on how you feel. See a doctor if your symptoms get worse, new warning signs appear, or you are not improving within a few days.",
+      "message_ur": "آپ کی علامات کا عام طور پر گھر پر خیال رکھا جا سکتا ہے۔ آرام کریں، زیادہ پانی پئیں اور اپنی حالت پر نظر رکھیں۔ اگر علامات بگڑ جائیں، کوئی نئی خطرناک علامت ظاہر ہو یا چند دنوں میں بہتری نہ آئے تو ڈاکٹر سے رجوع کریں۔",
+      "action_en": "Care for yourself at home and monitor your symptoms.",
+      "action_ur": "گھر پر اپنا خیال رکھیں اور علامات پر نظر رکھیں۔"
+    }
+  },
+  "redFlags": [
+    {
+      "id": "chest_pain",
+      "label_en": "Chest pain or chest pressure",
+      "label_ur": "سینے میں درد یا دباؤ",
+      "level": "emergency",
+      "appliesTo": ["child", "adult", "elderly"],
+      "keywords": ["chest pain", "chest pressure", "chest tightness", "pain in chest", "pain in my chest", "seene mein dard", "seene me dard", "seenay mein dard", "سینے میں درد", "سینے میں دباؤ"]
+    },
+    {
+      "id": "breathing_difficulty",
+      "label_en": "Severe difficulty breathing",
+      "label_ur": "سانس لینے میں شدید دشواری",
+      "level": "emergency",
+      "appliesTo": ["infant", "child", "adult", "elderly"],
+      "keywords": ["difficulty breathing", "trouble breathing", "can't breathe", "cannot breathe", "cant breathe", "struggling to breathe", "shortness of breath", "short of breath", "gasping", "saans nahi", "saans lene mein mushkil", "سانس نہیں", "سانس لینے میں دشواری", "سانس لینے میں مشکل"]
+    },
+    {
+      "id": "confusion",
+      "label_en": "New confusion, unusual drowsiness or unresponsiveness",
+      "label_ur": "اچانک ذہنی الجھن، غیر معمولی غنودگی یا ردعمل نہ دینا",
+      "level": "emergency",
+      "appliesTo": ["infant", "child", "adult", "elderly"],
+      "keywords": ["confused", "confusion", "disoriented", "unresponsive", "not responding", "unconscious", "won't wake up", "not waking up", "very drowsy"]
+    },
+    {
+      "id": "fainting",
+      "label_en": "Fainting or passing out",
+      "label_ur": "بے ہوش ہو جانا",
+      "level": "urgent",
+      "appliesTo": ["child", "adult", "elderly"],
+      "keywords": ["fainted", "fainting", "passed out", "blacked out", "lost consciousness", "behosh", "بے ہوش"]
+    },
+    {
+      "id": "seizure",
+      "label_en": "Seizure or fit",
+      "label_ur": "دورہ پڑنا یا جھٹکے لگنا",
+      "level": "emergency",
+      "appliesTo": ["infant", "child", "adult", "elderly"],
+      "keywords": ["seizure", "seizures", "convulsion", "convulsions", "fits", "mirgi", "مرگی", "جھٹکے"]
+    },
+    {
+      "id": "severe_bleeding",
+      "label_en": "Severe or uncontrolled bleeding",
+      "label_ur": "شدید یا نہ رکنے والا خون بہنا",
+      "level": "emergency",
+      "appliesTo": ["infant", "child", "adult", "elderly"],
+      "keywords": ["heavy bleeding", "severe bleeding", "bleeding heavily", "bleeding won't stop", "won't stop bleeding", "bleeding wont stop", "uncontrolled bleeding", "khoon nahi ruk raha", "خون نہیں رک رہا", "شدید خون"]
+    },
+    {
+      "id": "stiff_neck_with_fever",
+      "label_en": "Stiff neck together with fever",
+      "label_ur": "بخار کے ساتھ گردن کا اکڑ جانا",
+      "level": "emergency",
+      "appliesTo": ["infant", "child", "adult", "elderly"],
+      "keywords": ["stiff neck", "neck stiffness", "gardan akad", "گردن اکڑ", "گردن میں اکڑاؤ"],
+      "alsoRequiresKeywords": ["fever", "high temperature", "temperature", "bukhar", "bukhaar", "بخار"]
+    },
+    {
+      "id": "blood_in_vomit_or_stool",
+      "label_en": "Blood in vomit or stool",
+      "label_ur": "الٹی یا پاخانے میں خون",
+      "level": "urgent",
+      "appliesTo": ["infant", "child", "adult", "elderly"],
+      "keywords": ["vomiting blood", "blood in vomit", "blood in stool", "blood in my stool", "bloody stool", "black stool", "black tarry stool", "khoon ki ulti", "خون کی الٹی", "پاخانے میں خون"]
+    },
+    {
+      "id": "stroke_signs",
+      "label_en": "Signs of stroke (face drooping, arm weakness, slurred speech)",
+      "label_ur": "فالج کی علامات (چہرہ ٹیڑھا ہونا، بازو میں کمزوری، زبان لڑکھڑانا)",
+      "level": "emergency",
+      "appliesTo": ["child", "adult", "elderly"],
+      "keywords": ["face drooping", "facial droop", "face droop", "slurred speech", "weakness on one side", "one side weakness", "one sided weakness", "sudden numbness", "can't speak", "cannot speak", "stroke", "falij", "فالج"]
+    },
+    {
+      "id": "infant_not_feeding",
+      "label_en": "Baby not feeding or unable to drink",
+      "label_ur": "بچہ دودھ نہیں پی رہا یا پینے کے قابل نہیں",
+      "level": "urgent",
+      "appliesTo": ["infant"],
+      "keywords": ["not feeding", "refusing feeds", "refusing to feed", "won't feed", "not drinking milk", "unable to drink", "doodh nahi pee", "دودھ نہیں پی"]
+    },
+    {
+      "id": "severe_dehydration",
+      "label_en": "Signs of severe dehydration (very little or no urine, sunken eyes, very weak)",
+      "label_ur": "شدید پانی کی کمی کی علامات (پیشاب بہت کم یا بالکل نہیں، آنکھیں دھنسی ہوئی، شدید کمزوری)",
+      "level": "urgent",
+      "levelByAgeGroup": { "infant": "emergency", "child": "emergency" },
+      "appliesTo": ["infant", "child", "adult", "elderly"],
+      "keywords": ["severe dehydration", "severely dehydrated", "very dehydrated", "no urine", "not passing urine", "not peeing", "sunken eyes", "peshab nahi", "پیشاب نہیں"]
+    },
+    {
+      "id": "pregnancy_with_bleeding_or_severe_pain",
+      "label_en": "Bleeding or severe abdominal pain during pregnancy",
+      "label_ur": "حمل کے دوران خون آنا یا پیٹ میں شدید درد",
+      "level": "emergency",
+      "appliesTo": ["child", "adult", "elderly"],
+      "requiresPregnancy": true,
+      "keywords": ["bleeding", "vaginal bleeding", "spotting", "severe abdominal pain", "severe stomach pain", "severe pain", "pait mein shadeed dard", "خون آ رہا", "خون آنا", "پیٹ میں شدید درد"]
+    },
+    {
+      "id": "suicidal_thoughts",
+      "label_en": "Thoughts of suicide or self-harm",
+      "label_ur": "خودکشی یا خود کو نقصان پہنچانے کے خیالات",
+      "level": "emergency",
+      "appliesTo": ["child", "adult", "elderly"],
+      "keywords": ["suicidal", "suicide", "kill myself", "killing myself", "end my life", "ending my life", "take my own life", "take my life", "want to die", "harm myself", "hurt myself", "cut myself", "self harm", "self-harm", "khudkushi", "khud kushi", "apni jaan le", "خودکشی", "خود کشی", "اپنی جان لے", "مرنا چاہتا", "مرنا چاہتی"],
+      "message_en": "If you are having thoughts of ending your life or harming yourself, please contact emergency services (Rescue 1122) or a trusted person immediately. Ending your life is not the solution to your problems or your illness. Help and treatment are available, and things can get better. You do not have to face this alone. Stay with someone you trust until help arrives.",
+      "message_ur": "اگر آپ کے ذہن میں اپنی جان لینے یا خود کو نقصان پہنچانے کے خیالات آ رہے ہیں تو براہ کرم فوراً ایمرجنسی سروسز (ریسکیو 1122) یا کسی قابلِ اعتماد شخص سے رابطہ کریں۔ اپنی جان لینا آپ کے مسائل یا بیماری کا حل نہیں ہے۔ مدد اور علاج موجود ہے، اور حالات بہتر ہو سکتے ہیں۔ آپ اکیلے نہیں ہیں۔ مدد پہنچنے تک کسی قابلِ اعتماد شخص کے ساتھ رہیں۔",
+      "message_pa": "جے تہاڈے ذہن وچ اپنی جان لین یا اپنے آپ نوں نقصان پہنچان دے خیال آ رہے نیں تے مہربانی کر کے فوراً ایمرجنسی سروسز (ریسکیو 1122) یا کسے بھروسے والے بندے نال رابطہ کرو۔ اپنی جان لینا تہاڈے مسئلیاں یا بیماری دا حل نئیں اے۔ مدد تے علاج موجود اے، تے حالات بہتر ہو سکدے نیں۔ تسیں اکیلے نئیں او۔ مدد پہنچن تک کسے بھروسے والے بندے دے نال رہو۔"
+    }
+  ],
+  "ageRules": [
+    {
+      "id": "fever_under_3_months",
+      "label_en": "Fever in a baby under 3 months old",
+      "label_ur": "3 ماہ سے کم عمر بچے کو بخار",
+      "level": "urgent",
+      "ageGroups": ["infant"],
+      "maxAgeMonthsExclusive": 3,
+      "matchWhenAgeMonthsUnknown": true,
+      "complaintKeywords": ["fever", "high temperature", "temperature", "bukhar", "bukhaar", "بخار"]
+    },
+    {
+      "id": "fever_in_infant",
+      "label_en": "Fever in a baby under 1 year old",
+      "label_ur": "1 سال سے کم عمر بچے کو بخار",
+      "level": "soon",
+      "ageGroups": ["infant"],
+      "complaintKeywords": ["fever", "high temperature", "temperature", "bukhar", "bukhaar", "بخار"]
+    }
+  ],
+  "severityRules": [
+    {
+      "id": "high_severity",
+      "label_en": "Very severe symptoms (8 to 10 out of 10)",
+      "label_ur": "بہت شدید علامات (10 میں سے 8 سے 10)",
+      "level": "urgent",
+      "minSeverity": 8,
+      "maxSeverity": 10
+    }
+  ],
+  "durationRules": [
+    {
+      "id": "prolonged_symptoms",
+      "label_en": "Symptoms lasting more than 7 days",
+      "label_ur": "7 دن سے زیادہ عرصے سے جاری علامات",
+      "level": "soon",
+      "moreThanDays": 7
+    }
+  ],
+  "riskFactorRules": [
+    {
+      "id": "risk_diabetes",
+      "condition": "diabetes",
+      "label_en": "Diabetes with moderate or severe symptoms",
+      "label_ur": "ذیابیطس کے ساتھ درمیانی یا شدید علامات",
+      "minSeverity": 5,
+      "raiseBy": 1
+    },
+    {
+      "id": "risk_heart_disease",
+      "condition": "heart_disease",
+      "label_en": "Heart disease with moderate or severe symptoms",
+      "label_ur": "دل کی بیماری کے ساتھ درمیانی یا شدید علامات",
+      "minSeverity": 5,
+      "raiseBy": 1
+    },
+    {
+      "id": "risk_hypertension",
+      "condition": "hypertension",
+      "label_en": "High blood pressure with moderate or severe symptoms",
+      "label_ur": "ہائی بلڈ پریشر کے ساتھ درمیانی یا شدید علامات",
+      "minSeverity": 5,
+      "raiseBy": 1
+    },
+    {
+      "id": "risk_pregnancy",
+      "condition": "pregnancy",
+      "label_en": "Pregnancy with moderate or severe symptoms",
+      "label_ur": "حمل کے دوران درمیانی یا شدید علامات",
+      "minSeverity": 5,
+      "raiseBy": 1
+    }
+  ],
+  "knownConditions": ["diabetes", "heart_disease", "hypertension", "pregnancy", "asthma", "kidney_disease", "liver_disease", "immunocompromised"]
+}

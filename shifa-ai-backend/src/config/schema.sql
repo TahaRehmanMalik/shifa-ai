@@ -8,12 +8,16 @@ CREATE TABLE IF NOT EXISTS diseases (
   name_pa VARCHAR(255) NOT NULL,
   symptoms_en TEXT NOT NULL,
   symptoms_ur TEXT NOT NULL,
+  symptoms_pa TEXT NULL,
   root_cause_en TEXT NOT NULL,
   root_cause_ur TEXT NOT NULL,
+  root_cause_pa TEXT NULL,
   diet_plan_en TEXT NOT NULL,
   diet_plan_ur TEXT NOT NULL,
+  diet_plan_pa TEXT NULL,
   medicine_class_en VARCHAR(500) NOT NULL,
   medicine_class_ur VARCHAR(500) NOT NULL,
+  medicine_class_pa TEXT NULL,
   search_keywords TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uq_diseases_name_en (name_en)
@@ -30,6 +34,7 @@ CREATE TABLE IF NOT EXISTS query_logs (
   ai_raw_response JSON NULL,
   citations JSON NULL,
   response_time_ms INT NOT NULL,
+  triage_level VARCHAR(20) NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_query_logs_disease FOREIGN KEY (matched_disease_id) REFERENCES diseases(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
